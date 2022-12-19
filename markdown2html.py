@@ -43,7 +43,7 @@ def validate_heading(string: str) -> None:
     """
     result = re.search(r"(^#{1,6}) (.*)", string)
     if (result):
-        groups: Tuple[str | Any] = result.groups()
+        groups = result.groups()
         hashes: int = len(groups[0])
         text: str = groups[1]
         # print(f"<h{hashes}>{text}</h{hashes}>")
@@ -192,44 +192,44 @@ def remove_c_character(match_obj) -> str:
 
     return (to_convert)
 
+if (__name__ == '__main__'):
+    argc: int = len(argv)
 
-argc: int = len(argv)
+    if (argc < 3):
+        program_error("Usage: ./markdown2html.py README.md README.html")
 
-if (argc < 3):
-    program_error("Usage: ./markdown2html.py README.md README.html")
+    markdown_name_file: str = argv[1]
+    output_name_file: str = argv[2]
+    to_write: List[str] = []
 
-markdown_name_file: str = argv[1]
-output_name_file: str = argv[2]
-to_write: List[str] = []
+    if (not access(markdown_name_file, F_OK)):
+        program_error(f"Missing {markdown_name_file:s}")
 
-if (not access(markdown_name_file, F_OK)):
-    program_error(f"Missing {markdown_name_file:s}")
-
-if (not access(markdown_name_file, R_OK)):
-    program_error(
-        f"You don't have the right permissions to read '{markdown_name_file}'")
+    if (not access(markdown_name_file, R_OK)):
+        program_error(
+            f"You don't have the right permissions to read '{markdown_name_file}'")
 
 
-with open(markdown_name_file, 'r') as _file:
-    lines = _file.readlines()
-    quantity_of_lines: int = len(lines)
+    with open(markdown_name_file, 'r') as _file:
+        lines = _file.readlines()
+        quantity_of_lines: int = len(lines)
 
-    for i in range(0, quantity_of_lines):
-        lines[i] = re.sub(r"(\*\*[\w ]+\*\*)|(__[\w ]+__)",
-                          convert_to_bold, lines[i])
-        lines[i] = re.sub(r"\[\[([\w ]+)\]\]", convert_to_md5, lines[i])
-        lines[i] = re.sub(r"\(\(([\w ]+)\)\)", remove_c_character, lines[i])
+        for i in range(0, quantity_of_lines):
+            lines[i] = re.sub(r"(\*\*[\w ]+\*\*)|(__[\w ]+__)",
+                            convert_to_bold, lines[i])
+            lines[i] = re.sub(r"\[\[([\w ]+)\]\]", convert_to_md5, lines[i])
+            lines[i] = re.sub(r"\(\(([\w ]+)\)\)", remove_c_character, lines[i])
 
-        if (lines[i][0] == '#'):
-            validate_heading(lines[i])
-        elif (lines[i][0] == '-'):
-            validate_unordered_list(lines, i, quantity_of_lines)
-        elif (lines[i][0] == '*'):
-            validate_ordered_list(lines, i, quantity_of_lines)
-        else:
-            print_simple_text(lines, i, quantity_of_lines)
+            if (lines[i][0] == '#'):
+                validate_heading(lines[i])
+            elif (lines[i][0] == '-'):
+                validate_unordered_list(lines, i, quantity_of_lines)
+            elif (lines[i][0] == '*'):
+                validate_ordered_list(lines, i, quantity_of_lines)
+            else:
+                print_simple_text(lines, i, quantity_of_lines)
 
-with open(output_name_file, 'w') as _file:
-    _file.writelines(to_write)
+    with open(output_name_file, 'w') as _file:
+        _file.writelines(to_write)
 
-exit(0)
+    exit(0)
