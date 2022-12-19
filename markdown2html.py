@@ -12,6 +12,7 @@ import hashlib
 
 Regex_search = re.Match[str] | None
 
+
 def eprint(*args: str, **kwargs: Any) -> None:
     """
     Print in the standar error
@@ -26,7 +27,8 @@ def eprint(*args: str, **kwargs: Any) -> None:
 
 def program_error(msg: str) -> None:
     """
-    Exit program with 1, when ocurrs an error and print a message on the stderr.
+    Exit program with 1, when ocurrs an error and
+    print a message on the stderr.
 
     @msg: Message to print
     Returns: None
@@ -51,7 +53,8 @@ def validate_heading(string: str) -> None:
         to_write.append(f"<h{hashes}>{text}</h{hashes}>\n")
 
 
-def validate_unordered_list(words: List[str], idx: int, total_words: int) -> None:
+def validate_unordered_list(words: List[str], idx: int,
+                            total_words: int) -> None:
     """
     Reads a string and validate if is a unordered list from markdown format
 
@@ -82,7 +85,8 @@ def validate_unordered_list(words: List[str], idx: int, total_words: int) -> Non
         to_write.append("</ul>\n")
 
 
-def validate_ordered_list(words: List[str], idx: int, total_words: int) -> None:
+def validate_ordered_list(words: List[str], idx: int,
+                          total_words: int) -> None:
     """
     Reads a string and validate if is a ordered list from markdown format
 
@@ -147,13 +151,18 @@ def convert_to_bold(match_obj: Match) -> str:
     """Takes a words and converts them to a bold string
 
     Args:
-        match_obj (Match): A word arround double "_" or double "*" founded by regex matching
+        match_obj (Match): A word arround "__" or  "**"
+        founded by regex matching
 
     Returns:
         to_convert (str): Returns the converted string in a bold style format.
     """
     to_convert = match_obj.group()
-    to_convert = f"<b>{to_convert[2:-2]}</b>" if to_convert[0] == '*' else f"<em>{to_convert[2:-2]}</em>"
+
+    if (to_convert[0] == '*'):
+        to_convert = f"<b>{to_convert[2:-2]}</b>"
+    else:
+        to_convert = f"<em>{to_convert[2:-2]}</em>"
 
     return (to_convert)
 
@@ -170,6 +179,7 @@ def convert_to_md5(match_obj: re.Match) -> str:
     to_convert = match_obj.groups()[0].encode()
 
     return (hashlib.md5(to_convert).hexdigest())
+
 
 def remove_c_character(match_obj: re.Match) -> str:
     """Takes a words and remove the c characters
@@ -200,7 +210,7 @@ if (not access(markdown_name_file, F_OK)):
 
 if (not access(markdown_name_file, R_OK)):
     program_error(
-        f"You don't have the right permissions to read read \"{markdown_name_file}\"")
+        f"You don't have the right permissions to read '{markdown_name_file}'")
 
 
 with open(markdown_name_file, 'r') as _file:
@@ -208,7 +218,8 @@ with open(markdown_name_file, 'r') as _file:
     quantity_of_lines: int = len(lines)
 
     for i in range(0, quantity_of_lines):
-        lines[i] = re.sub(r"(\*\*[\w ]+\*\*)|(__[\w ]+__)", convert_to_bold, lines[i])
+        lines[i] = re.sub(r"(\*\*[\w ]+\*\*)|(__[\w ]+__)",
+                          convert_to_bold, lines[i])
         lines[i] = re.sub(r"\[\[([\w ]+)\]\]", convert_to_md5, lines[i])
         lines[i] = re.sub(r"\(\(([\w ]+)\)\)", remove_c_character, lines[i])
 
