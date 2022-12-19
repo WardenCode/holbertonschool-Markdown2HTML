@@ -3,14 +3,11 @@
 This program will read a markdown file and convert it to HTML
 """
 
-from typing import Any, List, Tuple, Literal, Match
+from typing import Any, List, Tuple, Match
 from sys import argv
 from os import access, R_OK, F_OK
 import re
 import hashlib
-
-
-Regex_search = re.Match[str] | None
 
 
 def eprint(*args: str, **kwargs: Any) -> None:
@@ -44,7 +41,7 @@ def validate_heading(string: str) -> None:
     Args:
         string (str): String to validate
     """
-    result: Regex_search = re.search(r"(^#{1,6}) (.*)", string)
+    result = re.search(r"(^#{1,6}) (.*)", string)
     if (result):
         groups: Tuple[str | Any] = result.groups()
         hashes: int = len(groups[0])
@@ -64,11 +61,11 @@ def validate_unordered_list(words: List[str], idx: int,
         words (int): Quantity of words
     """
 
-    regex: Literal['^- (.*)'] = r"^- (.*)"
+    regex = r"^- (.*)"
 
-    before_line: Regex_search = re.search(regex, words[idx - 1])
-    current_line: Regex_search = re.search(regex, words[idx])
-    after_line: Regex_search = re.search(
+    before_line = re.search(regex, words[idx - 1])
+    current_line = re.search(regex, words[idx])
+    after_line = re.search(
         regex, words[idx + 1] if idx + 1 < total_words else '')
 
     if (not before_line):
@@ -96,11 +93,11 @@ def validate_ordered_list(words: List[str], idx: int,
         total_words (int): Quantity of words
     """
 
-    regex: Literal['^\\* (.*)'] = r"^\* (.*)"
+    regex = r"^\* (.*)"
 
-    before_line: Regex_search = re.search(regex, words[idx - 1])
-    current_line: Regex_search = re.search(regex, words[idx])
-    after_line: Regex_search = re.search(
+    before_line = re.search(regex, words[idx - 1])
+    current_line = re.search(regex, words[idx])
+    after_line = re.search(
         regex, words[idx + 1] if idx + 1 < total_words else '')
 
     if (not before_line):
@@ -129,9 +126,9 @@ def print_simple_text(words: List[str], idx: int, total_words: int) -> None:
 
     regex = r"^[^-# \n].*"
 
-    before_line: Regex_search = re.search(regex, words[idx - 1])
-    current_line: Regex_search = re.search(regex, words[idx])
-    following_word: Regex_search = re.search(
+    before_line = re.search(regex, words[idx - 1])
+    current_line = re.search(regex, words[idx])
+    following_word = re.search(
         regex, words[idx + 1] if idx + 1 < total_words else '')
 
     if (current_line):
@@ -167,7 +164,7 @@ def convert_to_bold(match_obj: Match) -> str:
     return (to_convert)
 
 
-def convert_to_md5(match_obj: re.Match) -> str:
+def convert_to_md5(match_obj) -> str:
     """Takes a words and converts them to md5 hash
 
     Args:
@@ -181,7 +178,7 @@ def convert_to_md5(match_obj: re.Match) -> str:
     return (hashlib.md5(to_convert).hexdigest())
 
 
-def remove_c_character(match_obj: re.Match) -> str:
+def remove_c_character(match_obj) -> str:
     """Takes a words and remove the c characters
 
     Args:
