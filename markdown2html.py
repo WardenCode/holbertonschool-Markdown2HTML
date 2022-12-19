@@ -3,7 +3,7 @@
 This program will read a markdown file and convert it to HTML
 """
 
-from typing import Any, List, Tuple, Match
+from typing import Any, List, Match
 from sys import argv
 from os import access, R_OK, F_OK
 import re
@@ -144,11 +144,11 @@ def print_simple_text(words: List[str], idx: int, total_words: int) -> None:
         to_write.append("<br/>\n" if following_word else "</p>\n")
 
 
-def convert_to_bold(match_obj: Match) -> str:
+def convert_to_bold_b(match_obj: Match) -> str:
     """Takes a words and converts them to a bold string
 
     Args:
-        match_obj (Match): A word arround "__" or  "**"
+        match_obj (Match): A word arround "**"
         founded by regex matching
 
     Returns:
@@ -158,7 +158,22 @@ def convert_to_bold(match_obj: Match) -> str:
 
     if (to_convert[0] == '*'):
         to_convert = f"<b>{to_convert[2:-2]}</b>"
-    else:
+
+    return (to_convert)
+
+def convert_to_bold_em(match_obj: Match) -> str:
+    """Takes a words and converts them to a bold string
+
+    Args:
+        match_obj (Match): A word arround "__"
+        founded by regex matching
+
+    Returns:
+        to_convert (str): Returns the converted string in a bold style format.
+    """
+    to_convert = match_obj.group()
+
+    if (to_convert[0] == '_'):
         to_convert = f"<em>{to_convert[2:-2]}</em>"
 
     return (to_convert)
@@ -168,7 +183,7 @@ def convert_to_md5(match_obj) -> str:
     """Takes a words and converts them to md5 hash
 
     Args:
-        match_obj (Match): A word arround double "[]" founded by regex matching
+        match_obj (Match): A word arround "[[]]" founded by regex matching
 
     Returns:
         md5_str (str): Returns an md5 hash in hexadecimal.
@@ -182,7 +197,7 @@ def remove_c_character(match_obj) -> str:
     """Takes a words and remove the c characters
 
     Args:
-        match_obj (Match): A word arround double "()" founded by regex matching
+        match_obj (Match): A word arround "(())" founded by regex matching
 
     Returns:
         to_convert (str): Returns a string without 'c' and 'C'.
@@ -215,10 +230,10 @@ if (__name__ == '__main__'):
         quantity_of_lines: int = len(lines)
 
         for i in range(0, quantity_of_lines):
-            lines[i] = re.sub(r"(\*\*[\w ]+\*\*)|(__[\w ]+__)",
-                            convert_to_bold, lines[i])
-            lines[i] = re.sub(r"\[\[([\w ]+)\]\]", convert_to_md5, lines[i])
-            lines[i] = re.sub(r"\(\(([\w ]+)\)\)", remove_c_character, lines[i])
+            lines[i] = re.sub(r"\(\(([\w /]+)\)\)", remove_c_character, lines[i])
+            lines[i] = re.sub(r"\[\[([\w /]+)\]\]", convert_to_md5, lines[i])
+            lines[i] = re.sub(r"(\*\*[\w <>/]+\*\*)", convert_to_bold_b, lines[i])
+            lines[i] = re.sub(r"(__[\w <>/]+__)", convert_to_bold_em, lines[i])
 
             if (lines[i][0] == '#'):
                 validate_heading(lines[i])
